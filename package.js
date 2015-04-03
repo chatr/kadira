@@ -1,8 +1,7 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
   "version": "2.20.1",
-  "git": "https://github.com/meteorhacks/kadira.git",
-  "name": "meteorhacks:kadira"
+  "name": "artpolikarpov:kadira-server-only"
 });
 
 var npmModules = {
@@ -15,7 +14,7 @@ Npm.depends(npmModules);
 
 Package.on_use(function(api) {
   configurePackage(api);
-  api.export(['Kadira']);
+  api.export(['Kadira'], 'server');
 });
 
 Package.on_test(function(api) {
@@ -23,12 +22,12 @@ Package.on_test(function(api) {
   api.use([
     'tinytest',
     'test-helpers'
-  ], ['client', 'server']);
+  ], 'server');
 
   // common before
   api.add_files([
     'tests/models/base_error.js'
-  ], ['client', 'server']);
+  ], 'server');
 
   // common server
   api.add_files([
@@ -59,50 +58,39 @@ Package.on_test(function(api) {
     'tests/error_tracking.js',
     'tests/wait_time_builder.js',
     'tests/hijack/set_labels.js',
-    'tests/environment_variables.js',
+    'tests/environment_variables.js'
   ], 'server');
-
-  // common client
-  api.add_files([
-    'tests/client/utils.js',
-    'tests/client/error_tracking.js',
-    'tests/client/models/error.js',
-    'tests/client/error_reporters/window_error.js',
-    'tests/client/error_reporters/zone.js',
-    'tests/client/error_reporters/meteor_debug.js',
-  ], 'client');
 
   // common after
   api.add_files([
     'tests/common/default_error_filters.js',
     'tests/common/send.js'
-  ], ['client', 'server']);
+  ], 'server');
 });
 
 function configurePackage(api) {
   if(api.versionsFrom) {
-    api.versionsFrom('METEOR@0.9.1');
-    api.use('meteorhacks:meteorx@1.3.1');
-    api.use('meteorhacks:zones@1.2.1', {weak: true});
+    api.versionsFrom('METEOR@0.9.1', 'server');
+    api.use('meteorhacks:meteorx@1.3.1', 'server');
+    api.use('meteorhacks:zones@1.2.1', 'server', {weak: true});
   } else {
     // for Meteor releases <= 0.8.3
     // now, zones is a weak dependancy!
     // kadira on the client side knows how to handle it
     // api.use('zones');
-    api.use('meteorx');
+    api.use('meteorx', 'server');
   }
 
   api.use([
     'minimongo', 'livedata', 'mongo-livedata', 'ejson',
     'underscore', 'http', 'email', 'random'
-  ], ['server']);
-  api.use(['underscore', 'random', 'jquery', 'localstorage'], ['client']);
+  ], 'server');
 
   // common before
   api.add_files([
     'lib/common/unify.js',
     'lib/models/base_error.js'
-  ], ['client', 'server']);
+  ], 'server');
 
   // only server
   api.add_files([
@@ -136,28 +124,9 @@ function configurePackage(api) {
     'lib/auto_connect.js'
   ], 'server');
 
-  // only client
-  api.add_files([
-    'lib/retry.js',
-    'lib/ntp.js',
-    'lib/client/utils.js',
-    'lib/client/models/error.js',
-    'lib/client/error_reporters/zone.js',
-    'lib/client/error_reporters/window_error.js',
-    'lib/client/error_reporters/meteor_debug.js',
-    'lib/client/kadira.js'
-  ], 'client');
-
-  api.add_files([
-    // It's possible to remove this file after some since this just contains
-    // a notice to the user.
-    // Actual implementation is in the meteorhacks:kadira-profiler package
-    'lib/profiler/client.js',
-  ], 'client');
-
   // common after
   api.add_files([
     'lib/common/default_error_filters.js',
     'lib/common/send.js'
-  ], ['client', 'server']);
+  ], 'server');
 }
