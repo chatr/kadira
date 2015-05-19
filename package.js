@@ -1,6 +1,6 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
-  "version": "2.20.1",
+  "version": "2.20.6",
   "name": "artpolikarpov:kadira-server-only"
 });
 
