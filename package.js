@@ -1,7 +1,7 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
   "version": "2.21.0",
-  "name": "artpolikarpov:kadira"
+  "name": "artpolikarpov:kadira-server-only"
 });
 
 var npmModules = {
