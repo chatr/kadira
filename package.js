@@ -1,14 +1,15 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
-  "version": "2.21.1",
-  "git": "https://github.com/chatr/kadira.git",
-  "name": "artpolikarpov:kadira-server-only"
+  "version": "2.23.0",
+  "git": "https://github.com/meteorhacks/kadira.git",
+  "name": "meteorhacks:kadira"
 });
 
 var npmModules = {
   "debug": "0.7.4",
   "request": "2.51.0",
-  "pidusage": "0.1.1"
+  "pidusage": "0.1.1",
+  "evloop-monitor": "0.1.0"
 };
 
 Npm.depends(npmModules);
@@ -71,15 +72,9 @@ Package.on_test(function(api) {
 
 function configurePackage(api) {
   if(api.versionsFrom) {
-    api.versionsFrom('METEOR@0.9.1', 'server');
-    api.use('meteorhacks:meteorx@1.3.1', 'server');
-    api.use('meteorhacks:zones@1.2.1', 'server', {weak: true});
-  } else {
-    // for Meteor releases <= 0.8.3
-    // now, zones is a weak dependancy!
-    // kadira on the client side knows how to handle it
-    // api.use('zones');
-    api.use('meteorx', 'server');
+    api.versionsFrom('METEOR@1.0');
+    api.use('meteorhacks:meteorx@1.3.1');
+    api.use('meteorhacks:zones@1.2.1', {weak: true});
   }
 
   api.use([
@@ -100,16 +95,16 @@ function configurePackage(api) {
     'lib/utils.js',
     'lib/ntp.js',
     'lib/wait_time_builder.js',
+    'lib/check_for_oplog.js',
+    'lib/tracer/tracer.js',
+    'lib/tracer/default_filters.js',
+    'lib/tracer/tracer_store.js',
     'lib/models/0model.js',
     'lib/models/methods.js',
     'lib/models/pubsub.js',
     'lib/models/system.js',
     'lib/models/errors.js',
     'lib/kadira.js',
-    'lib/check_for_oplog.js',
-    'lib/tracer/tracer.js',
-    'lib/tracer/default_filters.js',
-    'lib/tracer/tracer_store.js',
     'lib/hijack/wrap_server.js',
     'lib/hijack/wrap_session.js',
     'lib/hijack/wrap_subscription.js',
