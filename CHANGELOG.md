@@ -1,5 +1,18 @@
 # Changelog
 
+### v2.23.4
+* Fix for a weird bug we found from the customer support. Without this fix, his app won't bind to the port. 
+
+### v2.23.3
+* Fix a potential issue where the possiblity to mutate authHeaders.
+
+### v2.23.2
+* Change console.error in connect code to console.log. 
+
+### v2.23.1
+
+* Add support for Meteor 1.2. Fixes: [#181](https://github.com/meteorhacks/kadira/issues/181). It was an issue with how we are tracking `Fiber.yield`.
+
 ### v2.23.0
 * Add first steps on decoupling kadira's tracing into a seperate package.
 * With this version, we allow an way to expose Kadira traces and some other metrics without connecting to Kadira.
