@@ -15,7 +15,7 @@ http.createServer(function(req, res) {
   req.on('data', function(d) {
     data += d.toString();
   });
-  
+
   req.on('end', function() {
     if(req.url == '/echo') {
       var sendData = {success: true};
@@ -41,7 +41,7 @@ http.createServer(function(req, res) {
       res.end('internal-error-here');
     }
   });
-  
+
 }).listen(8808, server8808.return.bind(server8808));
 
 server3301.wait();
@@ -51,6 +51,19 @@ server8808.wait();
 
 Meteor.publish('tinytest-data', function() {
   return TestData.find();
+});
+
+Meteor.publish('tinytest-data-with-no-oplog', function() {
+  return TestData.find({}, {_disableOplog: true});
+});
+
+Meteor.publish('tinytest-data-random', function() {
+  return TestData.find({aa: {$ne: Random.id()}});
+});
+
+Meteor.publish('tinytest-data-cursor-fetch', function() {
+  var data = TestData.find({}).fetch();
+  this.ready();
 });
 
 Meteor.publish('tinytest-data-2', function() {

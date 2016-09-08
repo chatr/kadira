@@ -1,15 +1,16 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
-  "version": "2.24.1",
+  "version": "2.30.1",
   "git": "https://github.com/chatr/kadira.git",
   "name": "artpolikarpov:kadira-server-only"
 });
 
 var npmModules = {
   "debug": "0.7.4",
-  "request": "2.51.0",
-  "pidusage": "0.1.1",
-  "evloop-monitor": "0.1.0"
+  "kadira-core": "1.3.2",
+  "pidusage": "1.0.1",
+  "evloop-monitor": "0.1.0",
+  "lru-cache": "4.0.0"
 };
 
 Npm.depends(npmModules);
@@ -60,7 +61,8 @@ Package.on_test(function(api) {
     'tests/error_tracking.js',
     'tests/wait_time_builder.js',
     'tests/hijack/set_labels.js',
-    'tests/environment_variables.js'
+    'tests/environment_variables.js',
+    'tests/docsize_cache.js',
   ], 'server');
 
   // common after
@@ -72,13 +74,13 @@ Package.on_test(function(api) {
 
 function configurePackage(api) {
   if(api.versionsFrom) {
-    api.versionsFrom('METEOR@1.0');
+    api.versionsFrom('METEOR@1.2');
     api.use('meteorhacks:meteorx@1.4.1', ['server']);
     api.use('meteorhacks:zones@1.2.1', {weak: true});
   }
 
   api.use([
-    'minimongo', 'livedata', 'mongo-livedata', 'ejson',
+    'minimongo', 'livedata', 'mongo-livedata', 'ejson', 'ddp-common',
     'underscore', 'http', 'email', 'random'
   ], 'server');
 
@@ -104,11 +106,13 @@ function configurePackage(api) {
     'lib/models/pubsub.js',
     'lib/models/system.js',
     'lib/models/errors.js',
+    'lib/docsize_cache.js',
     'lib/kadira.js',
     'lib/hijack/wrap_server.js',
     'lib/hijack/wrap_session.js',
     'lib/hijack/wrap_subscription.js',
     'lib/hijack/wrap_observers.js',
+    'lib/hijack/wrap_ddp_stringify.js',
     'lib/hijack/instrument.js',
     'lib/hijack/db.js',
     'lib/hijack/http.js',
@@ -117,7 +121,7 @@ function configurePackage(api) {
     'lib/hijack/error.js',
     'lib/hijack/set_labels.js',
     'lib/environment_variables.js',
-    'lib/auto_connect.js'
+    'lib/auto_connect.js',
   ], 'server');
 
   // common after

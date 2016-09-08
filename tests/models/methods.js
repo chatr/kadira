@@ -19,7 +19,9 @@ Tinytest.add(
               email: 0,
               async: 0,
               compute: 7.5,
-              total: 7.5
+              total: 7.5,
+              fetchedDocSize: 0,
+              sentMsgSize: 0
             }
           }
         }
@@ -29,8 +31,8 @@ Tinytest.add(
 
     var startTime = expected.methodMetrics[0].startTime;
     expected.methodMetrics[0].startTime = Kadira.syncedDate.syncTime(startTime);
-    // TODO comparing without stringify fails
-    test.equal(EJSON.stringify(payload), EJSON.stringify(expected));
+    // TODO comparing without parsing and stringifing fails
+    test.equal(EJSON.parse(EJSON.stringify(payload)), EJSON.parse(EJSON.stringify(expected)));
     CleanTestData();
   }
 );
@@ -53,13 +55,62 @@ Tinytest.add(
           email: 0,
           async: 0,
           compute: 7.5,
-          total: 7.5
+          total: 7.5,
+          fetchedDocSize: 0,
+          sentMsgSize: 0
         }
       }
     }];
     // TODO comparing without stringify fails
     expected[0].startTime = Kadira.syncedDate.syncTime(expected[0].startTime);
-    test.equal(EJSON.stringify(payload.methodMetrics), EJSON.stringify(expected));
+    test.equal(EJSON.parse(EJSON.stringify(payload.methodMetrics)), EJSON.parse(EJSON.stringify(expected)));
+    CleanTestData();
+  }
+);
+
+Tinytest.add(
+  'Models - Method - Metrics - fetchedDocSize',
+  function (test) {
+    var docs = [{data: 'data1'}, {data: 'data2'}];
+    docs.forEach(function(doc) {TestData.insert(doc)});
+
+    var methodId = RegisterMethod(function(){
+      var data = TestData.find({}).fetch();
+    });
+
+    var client = GetMeteorClient();
+    WithDocCacheGetSize(function () {
+      client.call(methodId);
+    }, 30);
+    Wait(100);
+
+    var payload = Kadira.models.methods.buildPayload();
+    test.equal(payload.methodMetrics[0].methods[methodId].fetchedDocSize, 60);
+    CleanTestData();
+  }
+);
+
+Tinytest.add(
+  'Models - Method - Metrics - sentMsgSize',
+  function (test) {
+    var docs = [{data: 'data1'}, {data: 'data2'}];
+    docs.forEach(function(doc) {TestData.insert(doc)});
+
+    var returnValue = "Some return value";
+    var methodId = RegisterMethod(function(){
+      var data = TestData.find({}).fetch();
+      return returnValue;
+    });
+
+    var client = GetMeteorClient();
+    client.call(methodId);
+
+    var payload = Kadira.models.methods.buildPayload();
+
+    var expected = (JSON.stringify({ msg: 'updated', methods: [ '1' ] }) +
+        JSON.stringify({ msg: 'result', id: '1', result: returnValue })).length
+
+    test.equal(payload.methodMetrics[0].methods[methodId].sentMsgSize, expected);
     CleanTestData();
   }
 );

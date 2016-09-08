@@ -100,7 +100,7 @@ Tinytest.add(
     var h1 = SubscribeAndWait(client, 'tinytest-data');
     Wait(100);
     h1.stop();
-    Wait(100);
+    Wait(200);
     var metrics = FindMetricsForPub('tinytest-data');
     test.isTrue(CompareNear(metrics.lifeTime, 100));
     CloseClient(client);
@@ -129,6 +129,26 @@ Tinytest.add(
 // //     // CleanTestData();
 // //   }
 // // );
+
+Tinytest.add(
+  'Subscriptions - ObserverLifetime - sub',
+  function (test) {
+    CleanTestData();
+    EnableTrackingMethods();
+    var client = GetMeteorClient();
+    var Future = Npm.require('fibers/future');
+    var f = new Future();
+    var h1 = SubscribeAndWait(client, 'tinytest-data');
+    Wait(100);
+    h1.stop();
+    Wait(100);
+    var metrics = FindMetricsForPub('tinytest-data');
+
+    test.isTrue(CompareNear(metrics.observerLifetime, 100));
+    CloseClient(client);
+  }
+);
+
 
 Tinytest.add(
   'Subscriptions - active subs',
@@ -162,6 +182,7 @@ Tinytest.add(
       this.ready();
       this.ready();
     });
+    var original = Kadira.models.pubsub._trackReady;
     Kadira.models.pubsub._trackReady = function(session, sub) {
       if(sub._name == pubId) {
         ReadyCounts++;
@@ -171,6 +192,7 @@ Tinytest.add(
     var h1 = SubscribeAndWait(client, pubId);
 
     test.equal(ReadyCounts, 1);
+    Kadira.models.pubsub._trackReady = original;
     CloseClient(client);
   }
 );
