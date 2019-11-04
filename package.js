@@ -1,6 +1,6 @@
 Package.describe({
   "summary": "Performance Monitoring for Meteor",
-  "version": "2.30.1",
+  "version": "2.30.2",
   "git": "https://github.com/chatr/kadira.git",
   "name": "artpolikarpov:kadira-server-only"
 });
@@ -10,7 +10,9 @@ var npmModules = {
   "kadira-core": "1.3.2",
   "pidusage": "1.0.1",
   "evloop-monitor": "0.1.0",
-  "lru-cache": "4.0.0"
+  "pidusage": "0.1.1",
+  "lru-cache": "4.0.0",
+  "json-stringify-safe": "5.0.1"
 };
 
 Npm.depends(npmModules);
